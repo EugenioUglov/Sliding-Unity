@@ -9,6 +9,7 @@ public class PlayerSliding : MonoBehaviour
     [SerializeField] private float _slideForce = 500;
     [SerializeField] private float _maxSlideTime = 1;
     [SerializeField] private Vector3 _newColliderSize = new Vector3(1, 0.5f, 1);
+    [SerializeField] private Vector3 _newColliderCenter;
     [SerializeField] private KeyCode _slideKey = KeyCode.LeftControl;
     [SerializeField] private UnityEvent _onStartSliding;
     [SerializeField] private UnityEvent _onStopSliding;
@@ -16,12 +17,14 @@ public class PlayerSliding : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     private bool _isSliding = false;
     private Vector3 _defaultColliderSize;
+    private Vector3 _defaultColliderCenter;
     private float _horizontalAxis;
     private float _slideTimer;
 
     private void Awake()
     {
         _defaultColliderSize = _boxCollider.size;
+        _defaultColliderCenter = _boxCollider.center;
     }
 
     private void Update()
@@ -44,6 +47,8 @@ public class PlayerSliding : MonoBehaviour
     {
         _slideTimer = _maxSlideTime;
         _boxCollider.size = _newColliderSize;
+        _boxCollider.center = _newColliderCenter;
+        
         _onStartSliding?.Invoke();
         _isSliding = true;
         
@@ -57,7 +62,6 @@ public class PlayerSliding : MonoBehaviour
             {
                 _rigidbody.AddForce(inputDirection.normalized * _slideForce, ForceMode.Force);
                 _slideTimer -= Time.deltaTime;
-                print(_slideTimer);
 
                 if (_slideTimer <= 0)
                 {
@@ -75,6 +79,7 @@ public class PlayerSliding : MonoBehaviour
     private void StopSlide()
     {
         _boxCollider.size = _defaultColliderSize;
+        _boxCollider.center = _defaultColliderCenter;
         _onStopSliding?.Invoke();
         _isSliding = false;
     }
